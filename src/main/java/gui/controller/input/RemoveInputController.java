@@ -3,6 +3,7 @@ package gui.controller.input;
 import components.ComponentManager;
 import gui.model.InputModel;
 import gui.view.InputView;
+import gui.view.MainStage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -13,10 +14,10 @@ public class RemoveInputController implements EventHandler<ActionEvent> {
     private InputModel inputModel;
     private VBox vBox;
 
-    public RemoveInputController(InputModel inputModel, VBox vBox) {
+    public RemoveInputController(InputView inputView, InputModel inputModel, VBox vBox) {
+        this.inputView = inputView;
         this.inputModel = inputModel;
         this.vBox = vBox;
-        this.inputView = InputView.getInstance();
     }
 
     @Override

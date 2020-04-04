@@ -17,7 +17,7 @@ import java.util.concurrent.ForkJoinPool;
 
 public class ComponentManager {
 
-    public static ComponentManager instance = null;
+    private static ComponentManager instance = null;
 
     public static int FILE_INPUT_SLEEP_TIME;
     public static int COUNTER_DATA_LIMIT;
@@ -101,9 +101,9 @@ public class ComponentManager {
         return instance;
     }
 
-    public Set<String> getAllCrunchers() {
-        return this.crunchers.keySet();
-    }
+//    public Set<String> getAllCrunchers() {
+//        return this.crunchers.keySet();
+//    }
 
     public Map<String, CounterCruncher> getCrunchers() {
         return crunchers;

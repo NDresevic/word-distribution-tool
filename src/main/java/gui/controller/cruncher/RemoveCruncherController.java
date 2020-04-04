@@ -2,7 +2,6 @@ package gui.controller.cruncher;
 
 import gui.model.CruncherModel;
 import gui.view.CruncherView;
-import gui.view.InputView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.VBox;
@@ -25,7 +24,5 @@ public class RemoveCruncherController implements EventHandler<ActionEvent> {
 
         cruncherView.getCrunchers().remove(cruncherModel);
         cruncherView.getChildren().remove(vBox);
-
-        InputView.getInstance().getAllCrunchers().remove(cruncherModel.getName());
     }
 }

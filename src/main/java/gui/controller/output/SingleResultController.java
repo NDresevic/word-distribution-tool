@@ -1,10 +1,9 @@
-package gui.controller.input;
+package gui.controller.output;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
-public class AddRemoveDirectoryController implements EventHandler<ActionEvent> {
-
+public class SingleResultController implements EventHandler<ActionEvent>{
     @Override
     public void handle(ActionEvent event) {
 

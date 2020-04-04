@@ -9,7 +9,7 @@ public class InputModel {
 
     private String name;
     private String disc;
-    private ObservableList<String> crunchers;
+    private ObservableList<CruncherModel> crunchers;
     private ObservableList<File> directories;
 
     public InputModel(String name, String disc) {
@@ -27,7 +27,7 @@ public class InputModel {
         return disc;
     }
 
-    public ObservableList<String> getCrunchers() {
+    public ObservableList<CruncherModel> getCrunchers() {
         return crunchers;
     }
 

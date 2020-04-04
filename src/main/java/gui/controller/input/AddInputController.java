@@ -12,9 +12,9 @@ public class AddInputController implements EventHandler<ActionEvent> {
     private InputView inputView;
     private ComboBox<String> discComboBox;
 
-    public AddInputController(ComboBox<String> discComboBox) {
+    public AddInputController(InputView inputView, ComboBox<String> discComboBox) {
+        this.inputView = inputView;
         this.discComboBox = discComboBox;
-        this.inputView = InputView.getInstance();
     }
 
     @Override
@@ -24,5 +24,7 @@ public class AddInputController implements EventHandler<ActionEvent> {
 
         InputModel inputModel = new InputModel(name, disc);
         this.inputView.addFileInput(inputModel);
+
+        ComponentManager.getInstance().addInput(disc);
     }
 }

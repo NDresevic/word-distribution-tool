@@ -3,7 +3,6 @@ package gui.controller.cruncher;
 import components.ComponentManager;
 import gui.model.CruncherModel;
 import gui.view.CruncherView;
-import gui.view.InputView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextInputDialog;
@@ -19,7 +18,6 @@ public class AddCruncherController implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent actionEvent) {
-
         TextInputDialog textInputDialog = new TextInputDialog("1");
         textInputDialog.setHeaderText("Enter cruncher arity");
         textInputDialog.initModality(Modality.APPLICATION_MODAL);
@@ -29,8 +27,6 @@ public class AddCruncherController implements EventHandler<ActionEvent> {
 
             CruncherModel cruncherModel = new CruncherModel(name, arity);
             this.cruncherView.addCruncher(cruncherModel);
-
-            InputView.getInstance().getAllCrunchers().add(name);
         });
     }
 }

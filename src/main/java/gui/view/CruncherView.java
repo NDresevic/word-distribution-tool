@@ -3,18 +3,17 @@ package gui.view;
 import gui.controller.cruncher.AddCruncherController;
 import gui.controller.cruncher.RemoveCruncherController;
 import gui.model.CruncherModel;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class CruncherView extends VBox {
 
     private Button addCruncher;
-    private List<CruncherModel> crunchers;
+    private ObservableList<CruncherModel> crunchers;
 
     public CruncherView() {
         initElements();
@@ -23,7 +22,7 @@ public class CruncherView extends VBox {
 
     private void initElements() {
         this.addCruncher = new Button("Add Cruncher");
-        this.crunchers = new ArrayList<>();
+        this.crunchers = FXCollections.observableArrayList();
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -58,7 +57,7 @@ public class CruncherView extends VBox {
         this.getChildren().add(vBox);
     }
 
-    public List<CruncherModel> getCrunchers() {
+    public ObservableList<CruncherModel> getCrunchers() {
         return crunchers;
     }
 }

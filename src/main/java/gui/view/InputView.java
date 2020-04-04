@@ -1,19 +1,13 @@
 package gui.view;
 
-import components.ComponentManager;
 import configuration.Configuration;
-import gui.controller.input.AddInputController;
-import gui.controller.input.LinkUnlinkCruncherController;
-import gui.controller.input.RemoveInputController;
+import gui.controller.input.*;
 import gui.model.CruncherModel;
 import gui.model.InputModel;
-import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -23,28 +17,27 @@ import java.util.List;
 
 public class InputView extends VBox {
 
-    public static InputView instance;
-
     private List<InputModel> inputs;
-    private List<String> allCrunchers;
+    private ObservableList<CruncherModel> allCrunchers;
 
     private ComboBox<String> discComboBox;
-    private ComboBox<String> crunchersComboBox = new ComboBox<>();
+    private ComboBox<CruncherModel> crunchersComboBox;
     private Button addFileInput;
 
-    private InputView() {
+    public InputView(ObservableList<CruncherModel> allCrunchers) {
+        this.allCrunchers = allCrunchers;
         initElements();
         addElements();
     }
 
     private void initElements() {
         this.inputs = new ArrayList<>();
-        this.allCrunchers = new ArrayList<>();//FXCollections.observableArrayList(ComponentManager.getInstance().getAllCrunchers());
         this.discComboBox = new ComboBox<>();
+        this.crunchersComboBox = new ComboBox<>(this.allCrunchers);
+        this.addFileInput = new Button("Add File Input");
+
         this.discComboBox.getItems().addAll(Configuration.getParameter("disks").split(";"));
         this.discComboBox.getSelectionModel().selectFirst();
-        this.crunchersComboBox.getItems().addAll(this.allCrunchers);
-        this.addFileInput = new Button("Add File Input");
 
         setSpacing(10);
         setPadding(new Insets(10));
@@ -55,16 +48,11 @@ public class InputView extends VBox {
         getChildren().add(discComboBox);
         getChildren().add(addFileInput);
 
-        addFileInput.setOnAction(new AddInputController(this.discComboBox));
+        addFileInput.setOnAction(new AddInputController(this, this.discComboBox));
     }
 
     public void addFileInput(InputModel inputModel) {
         this.inputs.add(inputModel);
-
-        ListView<String> crunchersListView = new ListView<>();
-        crunchersListView.setItems(inputModel.getCrunchers());
-        ListView<File> directoriesListView = new ListView<>();
-        directoriesListView.setItems(inputModel.getDirectories());
 
         Button linkCruncherButton = new Button("Link cruncher");
         Button unlinkCruncherButton = new Button("Unlink cruncher");
@@ -72,6 +60,32 @@ public class InputView extends VBox {
         Button removeDirButton = new Button("Remove dir");
         Button startPauseButton = new Button("Start");
         Button removeInputButton = new Button("Remove file input");
+
+        ObservableList<CruncherModel> observableCrunchers = inputModel.getCrunchers();
+//        observableCrunchers.addListener(new ListChangeListener<CruncherModel>() {
+//            @Override
+//            public void onChanged(Change<? extends CruncherModel> change) {
+//                if (observableCrunchers.isEmpty()) {
+//                    linkCruncherButton.setDisable(true);
+//                    unlinkCruncherButton.setDisable(true);
+//                } else {
+//                    linkCruncherButton.setDisable(false);
+//                    unlinkCruncherButton.setDisable(false);
+//                }
+//            }
+//        });
+
+
+        ListView<CruncherModel> crunchersListView = new ListView<>();
+        crunchersListView.setItems(observableCrunchers);
+        crunchersListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+
+        unlinkCruncherButton.disableProperty().bind(crunchersListView.getSelectionModel().selectedItemProperty().isNull());
+
+
+        ListView<File> directoriesListView = new ListView<>();
+        directoriesListView.setItems(inputModel.getDirectories());
+        directoriesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
         HBox addRemoveDirBox = new HBox();
         addRemoveDirBox.setSpacing(10);
@@ -102,26 +116,16 @@ public class InputView extends VBox {
         vBox.getChildren().add(inputsBox);
         vBox.getChildren().add(workingLabel);
 
-        removeInputButton.setOnAction(new RemoveInputController(inputModel, vBox));
-        linkCruncherButton.setOnAction(new LinkUnlinkCruncherController("link", inputModel, this.crunchersComboBox));
-        unlinkCruncherButton.setOnAction(new LinkUnlinkCruncherController("unlink", inputModel, this.crunchersComboBox));
+        removeInputButton.setOnAction(new RemoveInputController(this, inputModel, vBox));
+        linkCruncherButton.setOnAction(new LinkCruncherController(inputModel, this.crunchersComboBox));
+        unlinkCruncherButton.setOnAction(new UnlinkCruncherController(inputModel, crunchersListView));
+        addDirButton.setOnAction(new AddDirectoryController(inputModel));
+        removeDirButton.setOnAction(new RemoveDirectoryController(inputModel, directoriesListView));
 
         this.getChildren().add(vBox);
     }
 
     public List<InputModel> getInputs() {
         return inputs;
-    }
-
-    public List<String> getAllCrunchers() {
-        System.out.println("fff");
-        return allCrunchers;
-    }
-
-    public static InputView getInstance() {
-        if (instance == null) {
-            instance = new InputView();
-        }
-        return instance;
     }
 }
