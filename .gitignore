@@ -1,0 +1,6 @@
+.idea
+src/main/resouces/data
+target
+.DS_Store
+out
+word-distribution-tool.iml
