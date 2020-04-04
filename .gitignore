@@ -1,5 +1,5 @@
 .idea
-src/main/resouces/data
+src/main/resources/data
 target
 .DS_Store
 out
