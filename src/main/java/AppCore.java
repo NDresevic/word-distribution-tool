@@ -1,6 +1,5 @@
 import components.ComponentManager;
 import configuration.Configuration;
-import configuration.ConfigurationImplementation;
 import gui.main.MainGui;
 import javafx.application.Application;
 
@@ -10,14 +9,13 @@ import java.util.*;
 public class AppCore {
 
     public static AppCore instance = null;
-    private static Configuration configuration;
 
     private static final String ROOT_PATH = "/Users/ndresevic/RAF/8. semestar/KiDS/vezbe/word-distribution-tool/";
 
     private AppCore() { }
 
     public static void main(String[] args) {
-        configuration = new ConfigurationImplementation("config/app.properties");
+        Configuration.loadConfiguration("config/app.properties");
 
         File B = new File(ROOT_PATH + "src/main/resources/data/disk1/B");
         File A = new File(ROOT_PATH + "src/main/resources/data/disk1/A");

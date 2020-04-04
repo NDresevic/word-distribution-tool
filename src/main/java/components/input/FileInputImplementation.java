@@ -12,6 +12,8 @@ import java.util.concurrent.*;
 
 public class FileInputImplementation implements FileInput {
 
+    private volatile boolean exit = false;
+
     private final String disc;
     private List<File> directories;
     private final ExecutorService threadPool;
@@ -28,12 +30,21 @@ public class FileInputImplementation implements FileInput {
         this.crunchers = new CopyOnWriteArrayList<>();
     }
 
+    public FileInputImplementation(String disc, ExecutorService threadPool) {
+        this.disc = disc;
+        this.directories = new ArrayList<>();
+        this.threadPool = threadPool;
+        this.lastModifiedMap = new ConcurrentHashMap<>();
+        this.crunchers = new CopyOnWriteArrayList<>();
+    }
+
     @Override
     public void run() {
-        while (true) {
+        while (!exit) {
             this.scanDirectories();
             this.sleep(ComponentManager.FILE_INPUT_SLEEP_TIME);
         }
+        System.out.println("FileInput is stopped....");
     }
 
     /**
@@ -153,5 +164,10 @@ public class FileInputImplementation implements FileInput {
     @Override
     public void removeCruncher(CounterCruncher cruncher) {
         this.crunchers.remove(cruncher);
+    }
+
+    @Override
+    public void stop() {
+        this.exit = true;
     }
 }

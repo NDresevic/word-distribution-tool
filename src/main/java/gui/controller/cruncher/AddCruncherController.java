@@ -1,8 +1,9 @@
-package gui.controller;
+package gui.controller.cruncher;
 
 import components.ComponentManager;
 import gui.model.CruncherModel;
 import gui.view.CruncherView;
+import gui.view.InputView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextInputDialog;
@@ -28,6 +29,8 @@ public class AddCruncherController implements EventHandler<ActionEvent> {
 
             CruncherModel cruncherModel = new CruncherModel(name, arity);
             this.cruncherView.addCruncher(cruncherModel);
+
+            InputView.getInstance().getAllCrunchers().add(name);
         });
     }
 }

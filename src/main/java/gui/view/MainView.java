@@ -19,7 +19,7 @@ public class MainView extends BorderPane {
         HBox hBox = new HBox();
         hBox.setSpacing(10);
         hBox.setPadding(new Insets(10));
-        hBox.getChildren().addAll(new InputView(), new CruncherView());
+        hBox.getChildren().addAll(InputView.getInstance(), new CruncherView());
 
         this.setLeft(hBox);
         this.setCenter(new GraphDistributionView());

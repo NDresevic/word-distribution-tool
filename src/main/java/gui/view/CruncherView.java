@@ -1,7 +1,7 @@
 package gui.view;
 
-import gui.controller.AddCruncherController;
-import gui.controller.RemoveCruncherController;
+import gui.controller.cruncher.AddCruncherController;
+import gui.controller.cruncher.RemoveCruncherController;
 import gui.model.CruncherModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;

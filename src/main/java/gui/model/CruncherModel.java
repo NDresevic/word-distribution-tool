@@ -26,4 +26,9 @@ public class CruncherModel {
     public void setCrunching(boolean crunching) {
         this.crunching = crunching;
     }
+
+    @Override
+    public String toString() {
+        return this.name;
+    }
 }
