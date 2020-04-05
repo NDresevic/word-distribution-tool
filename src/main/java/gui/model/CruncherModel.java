@@ -28,6 +28,15 @@ public class CruncherModel {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CruncherModel) {
+            CruncherModel otherObj = (CruncherModel) obj;
+            return this.name.equals(otherObj.getName());
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         return this.name;
     }

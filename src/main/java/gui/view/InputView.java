@@ -4,7 +4,6 @@ import configuration.Configuration;
 import gui.controller.input.*;
 import gui.model.CruncherModel;
 import gui.model.InputModel;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -21,10 +20,10 @@ public class InputView extends VBox {
     private ObservableList<CruncherModel> allCrunchers;
 
     private ComboBox<String> discComboBox;
-    private ComboBox<CruncherModel> crunchersComboBox;
     private Button addFileInput;
 
     public InputView(ObservableList<CruncherModel> allCrunchers) {
+        super(5);
         this.allCrunchers = allCrunchers;
         initElements();
         addElements();
@@ -33,14 +32,11 @@ public class InputView extends VBox {
     private void initElements() {
         this.inputs = new ArrayList<>();
         this.discComboBox = new ComboBox<>();
-        this.crunchersComboBox = new ComboBox<>(this.allCrunchers);
-        this.addFileInput = new Button("Add File Input");
-
         this.discComboBox.getItems().addAll(Configuration.getParameter("disks").split(";"));
         this.discComboBox.getSelectionModel().selectFirst();
+        this.addFileInput = new Button("Add File Input");
 
-        setSpacing(10);
-        setPadding(new Insets(10));
+        setPadding(new Insets(5));
     }
 
     private void addElements() {
@@ -48,12 +44,22 @@ public class InputView extends VBox {
         getChildren().add(discComboBox);
         getChildren().add(addFileInput);
 
+        // if selected disc was already used to create FileInput then "Add File Input" button is disabled
+        discComboBox.setOnAction(e -> {
+            boolean valid = true;
+            for (InputModel inputModel: this.inputs) {
+                if (inputModel.getDisc().equals(discComboBox.getValue())) {
+                    valid = false;
+                    break;
+                }
+            }
+            addFileInput.setDisable(!valid);
+        });
+
         addFileInput.setOnAction(new AddInputController(this, this.discComboBox));
     }
 
     public void addFileInput(InputModel inputModel) {
-        this.inputs.add(inputModel);
-
         Button linkCruncherButton = new Button("Link cruncher");
         Button unlinkCruncherButton = new Button("Unlink cruncher");
         Button addDirButton = new Button("Add dir");
@@ -62,67 +68,64 @@ public class InputView extends VBox {
         Button removeInputButton = new Button("Remove file input");
 
         ObservableList<CruncherModel> observableCrunchers = inputModel.getCrunchers();
-//        observableCrunchers.addListener(new ListChangeListener<CruncherModel>() {
-//            @Override
-//            public void onChanged(Change<? extends CruncherModel> change) {
-//                if (observableCrunchers.isEmpty()) {
-//                    linkCruncherButton.setDisable(true);
-//                    unlinkCruncherButton.setDisable(true);
-//                } else {
-//                    linkCruncherButton.setDisable(false);
-//                    unlinkCruncherButton.setDisable(false);
-//                }
-//            }
-//        });
-
-
         ListView<CruncherModel> crunchersListView = new ListView<>();
         crunchersListView.setItems(observableCrunchers);
         crunchersListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-
-        unlinkCruncherButton.disableProperty().bind(crunchersListView.getSelectionModel().selectedItemProperty().isNull());
-
 
         ListView<File> directoriesListView = new ListView<>();
         directoriesListView.setItems(inputModel.getDirectories());
         directoriesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        HBox addRemoveDirBox = new HBox();
-        addRemoveDirBox.setSpacing(10);
-        addRemoveDirBox.setPadding(new Insets(10));
+        ComboBox<CruncherModel> crunchersComboBox  = new ComboBox<>(this.allCrunchers);
+        crunchersComboBox.getSelectionModel().selectFirst();
+        // if selected CruncherModel is already linked to InputModel then "Link Cruncher" button is disabled
+        crunchersComboBox.setOnAction(e ->
+                linkCruncherButton.setDisable(observableCrunchers.contains(crunchersComboBox.getValue())));
+
+        unlinkCruncherButton.disableProperty().bind(crunchersListView.getSelectionModel().selectedItemProperty().isNull());
+        removeDirButton.disableProperty().bind(directoriesListView.getSelectionModel().selectedItemProperty().isNull());
+
+        VBox linkUnlinkBox = new VBox(5);
+        linkUnlinkBox.getChildren().addAll(linkCruncherButton, unlinkCruncherButton);
+        HBox linkingBox = new HBox(5);
+        linkingBox.getChildren().addAll(crunchersComboBox, linkUnlinkBox);
+
+        HBox addRemoveDirBox = new HBox(5);
         addRemoveDirBox.getChildren().addAll(addDirButton, removeDirButton);
 
-        HBox inputsBox = new HBox();
-        inputsBox.setSpacing(10);
-        inputsBox.setPadding(new Insets(10));
+        HBox inputsBox = new HBox(5);
         inputsBox.getChildren().addAll(startPauseButton, removeInputButton);
 
-        Label workingLabel = new Label("Idle");
+        Label statusLabel = new Label("Idle");
 
-        VBox vBox = new VBox();
-        vBox.setSpacing(10);
-        vBox.setPadding(new Insets(10));
-        vBox.setStyle("-fx-border-color: black;");
+        VBox vBox = new VBox(5);
+        vBox.setPadding(new Insets(5));
+//        vBox.setStyle("-fx-border-color: black;");
 
         vBox.getChildren().add(new Label(inputModel.getName() + ": " + inputModel.getDisc()));
         vBox.getChildren().add(new Label("Crunchers:" ));
         vBox.getChildren().add(crunchersListView);
-        vBox.getChildren().add(this.crunchersComboBox);
-        vBox.getChildren().add(linkCruncherButton);
-        vBox.getChildren().add(unlinkCruncherButton);
+        vBox.getChildren().add(linkingBox);
         vBox.getChildren().add(new Label("Directories:"));
         vBox.getChildren().add(directoriesListView);
         vBox.getChildren().add(addRemoveDirBox);
         vBox.getChildren().add(inputsBox);
-        vBox.getChildren().add(workingLabel);
+        vBox.getChildren().add(statusLabel);
 
         removeInputButton.setOnAction(new RemoveInputController(this, inputModel, vBox));
-        linkCruncherButton.setOnAction(new LinkCruncherController(inputModel, this.crunchersComboBox));
-        unlinkCruncherButton.setOnAction(new UnlinkCruncherController(inputModel, crunchersListView));
+        linkCruncherButton.setOnAction(new LinkCruncherController(inputModel, crunchersComboBox));
+        unlinkCruncherButton.setOnAction(new UnlinkCruncherController(inputModel, crunchersListView, crunchersComboBox));
         addDirButton.setOnAction(new AddDirectoryController(inputModel));
         removeDirButton.setOnAction(new RemoveDirectoryController(inputModel, directoriesListView));
 
-        this.getChildren().add(vBox);
+        // TODO: implement action + add bindings to Start/Pause button
+        startPauseButton.setOnAction(new StartPauseInputController(inputModel, statusLabel));
+
+        this.getChildren().addAll(vBox);
+    }
+
+    public ComboBox<String> getDiscComboBox() {
+        return discComboBox;
     }
 
     public List<InputModel> getInputs() {

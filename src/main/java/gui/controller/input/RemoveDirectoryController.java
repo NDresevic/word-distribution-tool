@@ -22,7 +22,6 @@ public class RemoveDirectoryController implements EventHandler<ActionEvent> {
     @Override
     public void handle(ActionEvent event) {
         File directory = directoriesListView.getSelectionModel().getSelectedItem();
-
         inputModel.getDirectories().remove(directory);
 
         FileInput fileInput = ComponentManager.getInstance().getInputs().get(inputModel.getName());

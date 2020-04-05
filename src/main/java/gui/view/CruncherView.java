@@ -16,6 +16,7 @@ public class CruncherView extends VBox {
     private ObservableList<CruncherModel> crunchers;
 
     public CruncherView() {
+        super(5);
         initElements();
         addElements();
     }
@@ -24,8 +25,7 @@ public class CruncherView extends VBox {
         this.addCruncher = new Button("Add Cruncher");
         this.crunchers = FXCollections.observableArrayList();
 
-        setSpacing(10);
-        setPadding(new Insets(10));
+        setPadding(new Insets(5));
     }
 
     private void addElements() {
@@ -39,9 +39,8 @@ public class CruncherView extends VBox {
         this.crunchers.add(cruncher);
         Button removeButton = new Button("Remove cruncher");
 
-        VBox vBox = new VBox();
-        vBox.setSpacing(10);
-        vBox.setPadding(new Insets(10));
+        VBox vBox = new VBox(5);
+        vBox.setPadding(new Insets(5));
         vBox.setStyle("-fx-border-color: black;");
 
         vBox.getChildren().add(new Label("Name: " + cruncher.getName()));

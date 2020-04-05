@@ -18,6 +18,7 @@ public class OutputView extends VBox {
     private Button sumResultButton;
 
     public OutputView() {
+        super(5);
         initElements();
         addElements();
     }
@@ -28,20 +29,22 @@ public class OutputView extends VBox {
         this.sumResultButton = new Button("Sum result");
         this.outputModel = new OutputModel();
 
-        setSpacing(10);
-        setPadding(new Insets(10));
+        setPadding(new Insets(5));
     }
 
     private void addElements() {
         filesListView.setItems(outputModel.getFiles());
         filesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        getChildren().add(filesListView);
-        getChildren().add(singleResultButton);
-        getChildren().add(sumResultButton);
+        singleResultButton.disableProperty().bind(filesListView.getSelectionModel().selectedItemProperty().isNull());
+        sumResultButton.disableProperty().bind(filesListView.getSelectionModel().selectedItemProperty().isNull());
 
         singleResultButton.setOnAction(new SingleResultController());
         sumResultButton.setOnAction(new SumResultController());
+
+        getChildren().add(filesListView);
+        getChildren().add(singleResultButton);
+        getChildren().add(sumResultButton);
     }
 
     public OutputModel getOutputModel() {

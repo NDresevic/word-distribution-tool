@@ -13,6 +13,7 @@ public class GraphDistributionView extends HBox {
     private ScatterChart<Number, Number> scatterChart;
 
     public GraphDistributionView() {
+        super(5);
         initElements();
         addElements();
     }
@@ -24,8 +25,7 @@ public class GraphDistributionView extends HBox {
         xAxis.setLabel("X");
         yAxis.setLabel("Y");
 
-        setSpacing(10);
-        setPadding(new Insets(10));
+        setPadding(new Insets(5));
     }
 
     private void addElements() {

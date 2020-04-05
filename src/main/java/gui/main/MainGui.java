@@ -15,7 +15,7 @@ public class MainGui extends Application {
     public void start(Stage stage) {
         this.mainStage = MainStage.getInstance();
 
-        Scene scene = new Scene(this.mainStage.getBorderPane(), 1150, 750);
+        Scene scene = new Scene(this.mainStage.getBorderPane(), 1250, 850);
 
         this.mainStage.setTitle("Word distribution tool");
         this.mainStage.setScene(scene);

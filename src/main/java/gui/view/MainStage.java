@@ -27,11 +27,9 @@ public class MainStage extends Stage {
     }
 
     private void addElementsToView() {
-        borderPane.setPadding(new Insets(30, 10, 20, 30));
+        borderPane.setPadding(new Insets(5, 5, 5, 5));
 
-        HBox hBox = new HBox();
-        hBox.setSpacing(10);
-        hBox.setPadding(new Insets(10));
+        HBox hBox = new HBox(10);
         hBox.getChildren().addAll(this.inputView, this.cruncherView);
 
         borderPane.setLeft(hBox);

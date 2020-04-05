@@ -6,6 +6,7 @@ import components.input.FileInput;
 import gui.model.CruncherModel;
 import gui.model.InputModel;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.control.ComboBox;
 
@@ -28,5 +29,6 @@ public class LinkCruncherController implements EventHandler<ActionEvent> {
 
         componentManager.connectInputToCruncher(fileInput, counterCruncher);
         inputModel.getCrunchers().add(cruncherModel);
+        Event.fireEvent(comboBox, new ActionEvent());
     }
 }
