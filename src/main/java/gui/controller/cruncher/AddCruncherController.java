@@ -5,6 +5,7 @@ import gui.model.CruncherModel;
 import gui.view.CruncherView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
 
@@ -23,10 +24,12 @@ public class AddCruncherController implements EventHandler<ActionEvent> {
         textInputDialog.initModality(Modality.APPLICATION_MODAL);
         textInputDialog.showAndWait().ifPresent(response -> {
             int arity = Integer.parseInt(response);
-            String name = ComponentManager.getInstance().addCruncher(arity);
+            Label crunchingLabel = new Label("Crunching:");
+            String name = ComponentManager.getInstance().addCruncher(arity, crunchingLabel);
 
             CruncherModel cruncherModel = new CruncherModel(name, arity);
-            this.cruncherView.addCruncher(cruncherModel);
+            this.cruncherView.addCruncher(cruncherModel, crunchingLabel);
+            this.cruncherView.getCrunchers().add(cruncherModel);
         });
     }
 }

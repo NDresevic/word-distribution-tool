@@ -35,8 +35,7 @@ public class CruncherView extends VBox {
         addCruncher.setOnAction(new AddCruncherController(this));
     }
 
-    public void addCruncher(CruncherModel cruncher) {
-        this.crunchers.add(cruncher);
+    public void addCruncher(CruncherModel cruncher, Label crunchingLabel) {
         Button removeButton = new Button("Remove cruncher");
 
         VBox vBox = new VBox(5);
@@ -46,6 +45,7 @@ public class CruncherView extends VBox {
         vBox.getChildren().add(new Label("Name: " + cruncher.getName()));
         vBox.getChildren().add(new Label("Arity: " + cruncher.getArity()));
         vBox.getChildren().add(removeButton);
+        vBox.getChildren().add(crunchingLabel);
         removeButton.setOnAction(new RemoveCruncherController(this, cruncher, vBox));
         if (cruncher.isCrunching()) {
             vBox.getChildren().add(new Label("Crunching: "));

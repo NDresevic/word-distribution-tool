@@ -2,7 +2,9 @@ package components.input;
 
 import components.ComponentManager;
 import components.cruncher.CounterCruncher;
-import components.cruncher.CounterCruncherImplementation;
+import javafx.application.Platform;
+import javafx.scene.control.Label;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -13,6 +15,9 @@ import java.util.concurrent.*;
 public class FileInputImplementation implements FileInput {
 
     private volatile boolean exit = false;
+    private volatile boolean started = false;
+    private volatile boolean running = false;
+    private Label statusLabel;
 
     private final String disc;
     private List<File> directories;
@@ -30,10 +35,11 @@ public class FileInputImplementation implements FileInput {
         this.crunchers = new CopyOnWriteArrayList<>();
     }
 
-    public FileInputImplementation(String disc, ExecutorService threadPool) {
+    public FileInputImplementation(String disc, ExecutorService threadPool, Label statusLabel) {
         this.disc = disc;
-        this.directories = new ArrayList<>();
         this.threadPool = threadPool;
+        this.statusLabel = statusLabel;
+        this.directories = new ArrayList<>();
         this.lastModifiedMap = new ConcurrentHashMap<>();
         this.crunchers = new CopyOnWriteArrayList<>();
     }
@@ -41,8 +47,12 @@ public class FileInputImplementation implements FileInput {
     @Override
     public void run() {
         while (!exit) {
-            this.scanDirectories();
-            this.sleep(ComponentManager.FILE_INPUT_SLEEP_TIME);
+            if (running) {
+                this.scanDirectories();
+                this.sleep(ComponentManager.FILE_INPUT_SLEEP_TIME);
+            } else {
+                this.sleep();
+            }
         }
         System.out.println("FileInput is stopped....");
     }
@@ -96,9 +106,19 @@ public class FileInputImplementation implements FileInput {
         }
     }
 
+    private synchronized void sleep() {
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void readFile(File file) {
         synchronized (this.disc) {
             try {
+                Platform.runLater(() -> statusLabel.setText("Reading: " + file.getName()));
+
                 // novo citanje - manje memorije zauzima (3.91GB -> 3.76GB)
                 FileInputStream fis = new FileInputStream(file);
                 byte[] data = new byte[(int) file.length()];
@@ -112,6 +132,7 @@ public class FileInputImplementation implements FileInput {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Platform.runLater(() -> statusLabel.setText("Idle"));
         }
     }
 
@@ -122,17 +143,20 @@ public class FileInputImplementation implements FileInput {
     }
 
     @Override
-    public synchronized void startScan() {
+    public synchronized void startRunning() {
+        if (!started) {
+            started = true;
+            threadPool.execute(this);
+        }
+        running = true;
         notify();
     }
 
     @Override
-    public synchronized void pauseScan() {
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public synchronized void pauseRunning() {
+        running = false;
+        // because thread might already sleep
+        notify();
     }
 
     @Override

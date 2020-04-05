@@ -59,7 +59,7 @@ public class InputView extends VBox {
         addFileInput.setOnAction(new AddInputController(this, this.discComboBox));
     }
 
-    public void addFileInput(InputModel inputModel) {
+    public void addFileInput(InputModel inputModel, Label statusLabel) {
         Button linkCruncherButton = new Button("Link cruncher");
         Button unlinkCruncherButton = new Button("Unlink cruncher");
         Button addDirButton = new Button("Add dir");
@@ -96,7 +96,7 @@ public class InputView extends VBox {
         HBox inputsBox = new HBox(5);
         inputsBox.getChildren().addAll(startPauseButton, removeInputButton);
 
-        Label statusLabel = new Label("Idle");
+//        Label statusLabel = new Label("Idle");
 
         VBox vBox = new VBox(5);
         vBox.setPadding(new Insets(5));
@@ -119,7 +119,7 @@ public class InputView extends VBox {
         removeDirButton.setOnAction(new RemoveDirectoryController(inputModel, directoriesListView));
 
         // TODO: implement action + add bindings to Start/Pause button
-        startPauseButton.setOnAction(new StartPauseInputController(inputModel, statusLabel));
+        startPauseButton.setOnAction(new StartPauseInputController(startPauseButton, inputModel, statusLabel));
 
         this.getChildren().addAll(vBox);
     }

@@ -38,16 +38,11 @@ public class AppCore {
         discMap.put(ROOT_PATH + "src/main/resources/data/disk1", filesAB);
 //        discMap.put(ROOT_PATH + "src/main/resources/data/disk2", filesCD);
 
+
         ComponentManager componentManager = ComponentManager.getInstance();
         componentManager.initializeComponents(discMap);
 
         new Thread(() -> Application.launch(MainGui.class)).start();
-
-//        Thread t = new Thread(() -> {
-//            MainGui gui = new MainGui();
-//            gui.launch(args);
-//        });
-//        t.run();
 
 //        try {
 //            Thread.sleep(10000);

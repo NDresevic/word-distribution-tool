@@ -6,8 +6,8 @@ import java.io.File;
 
 public interface FileInput extends Runnable {
 
-    void startScan();
-    void pauseScan();
+    void startRunning();
+    void pauseRunning();
 
     void addDirectory(File directory);
     void removeDirectory(File directory);

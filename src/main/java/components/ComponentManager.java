@@ -7,9 +7,11 @@ import components.input.FileInputImplementation;
 import components.output.CacheOutput;
 import components.output.CacheOutputImplementation;
 import configuration.Configuration;
+import javafx.scene.control.Label;
 
 import java.io.File;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,6 +34,7 @@ public class ComponentManager {
 
     private Map<String, CounterCruncher> crunchers;
     private Map<String, FileInput> inputs;
+    private CacheOutput output;
 
     private ComponentManager() {
         FILE_INPUT_SLEEP_TIME = Integer.parseInt(Configuration.getParameter("file_input_sleep_time"));
@@ -44,33 +47,41 @@ public class ComponentManager {
 
         this.crunchers = new HashMap<>();
         this.inputs = new HashMap<>();
+        this.output = new CacheOutputImplementation(this.outputThreadPool);
     }
 
     public void initializeComponents(Map<String, List<File>> discFilesMap) {
         CacheOutput cacheOutput = new CacheOutputImplementation(this.outputThreadPool);
         for (Map.Entry<String, List<File>> entry : discFilesMap.entrySet()) {
             List<File> directories = new CopyOnWriteArrayList<>(entry.getValue());
-            FileInputImplementation fileInput = new FileInputImplementation(entry.getKey(), directories, this.inputThreadPool);
+            FileInput fileInput = new FileInputImplementation(entry.getKey(), directories, this.inputThreadPool);
 
-            CounterCruncherImplementation counterCruncher = new CounterCruncherImplementation(1, this.cruncherThreadPool);
-            this.connectInputToCruncher(fileInput, counterCruncher);
-            this.connectCruncherToOutput(counterCruncher, cacheOutput);
-            this.inputThreadPool.execute(fileInput);
+//            CounterCruncherImplementation counterCruncher = new CounterCruncherImplementation(1, this.cruncherThreadPool);
+//            this.connectInputToCruncher(fileInput, counterCruncher);
+//            this.connectCruncherToOutput(counterCruncher, cacheOutput);
+
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            fileInput.startScan();
         }
 
         System.out.println("AGGREGATED SIZE: " + cacheOutput.getAggregatedResults().size());
     }
 
-    public String addCruncher(int arity) {
-        CounterCruncher counterCruncher = new CounterCruncherImplementation(arity, this.cruncherThreadPool);
+    public String addCruncher(int arity, Label crunchingLabel) {
+        CounterCruncher counterCruncher = new CounterCruncherImplementation(arity, this.cruncherThreadPool, crunchingLabel);
+        this.connectCruncherToOutput(counterCruncher, this.output);
         String name = "Counter " + CRUNCHER_COUNT;
         this.crunchers.put(name, counterCruncher);
         CRUNCHER_COUNT++;
         return name;
     }
 
-    public String addInput(String disc) {
-        FileInput fileInput = new FileInputImplementation(disc, this.inputThreadPool);
+    public String addInput(String disc, Label statusLabel) {
+        FileInput fileInput = new FileInputImplementation(disc, this.inputThreadPool, statusLabel);
         String name = "File Input " + INPUT_COUNT;
         this.inputs.put(name, fileInput);
         INPUT_COUNT++;
@@ -101,15 +112,15 @@ public class ComponentManager {
         return instance;
     }
 
-//    public Set<String> getAllCrunchers() {
-//        return this.crunchers.keySet();
-//    }
-
     public Map<String, CounterCruncher> getCrunchers() {
         return crunchers;
     }
 
     public Map<String, FileInput> getInputs() {
         return inputs;
+    }
+
+    public FileInput getFileInputForName(String name) {
+        return this.inputs.get(name);
     }
 }
