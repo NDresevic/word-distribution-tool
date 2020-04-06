@@ -114,10 +114,12 @@ public class ComponentManager {
         counterCruncher.addOutput(cacheOutput);
     }
 
-    public Map<String, Integer> getResultForFile(String fileName) {
-        return output.getResultMapForFile(fileName);
-    }
+//    public Map<String, Integer> getResultForFile(String fileName) {
+//        return output.getResultMapForFile(fileName);
+//    }
 
+// TODO: thread safe make
+    // TODO: dodaje nul kad kazes cancel za folder
     public static ComponentManager getInstance() {
         if (instance == null) {
             instance = new ComponentManager();

@@ -2,11 +2,15 @@ package components.output;
 
 import javafx.collections.ObservableList;
 
+import java.util.List;
 import java.util.Map;
 
 public interface CacheOutput extends Runnable {
 
     void addOutputDataToQueue(OutputData outputData);
-    Map<String, Integer> getResultMapForFile(String name);
     ObservableList<String> getObservableFiles();
+
+    Map<String, Integer> poll(String fileName);
+    Map<String, Integer> take(String fileName);
+    void aggregateResults(String fileName, List<String> files);
 }

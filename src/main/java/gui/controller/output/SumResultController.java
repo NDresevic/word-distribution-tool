@@ -1,17 +1,13 @@
 package gui.controller.output;
 
 import components.ComponentManager;
-import gui.model.CruncherModel;
 import gui.view.OutputView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
-
-import java.io.File;
 import java.util.List;
 
 public class SumResultController implements EventHandler<ActionEvent> {
@@ -36,11 +32,7 @@ public class SumResultController implements EventHandler<ActionEvent> {
             }
 
             List<String> sumFiles = this.outputView.getFilesListView().getSelectionModel().getSelectedItems();
-
-            // TODO: do the sum
-
-
-            this.outputView.getOutputModel().getFiles().add(response);
+            ComponentManager.getInstance().getOutput().aggregateResults(response, sumFiles);
         });
 
     }

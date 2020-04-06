@@ -15,6 +15,7 @@ public class OutputView extends VBox {
     private ListView<String> filesListView;
     private Button singleResultButton;
     private Button sumResultButton;
+    private ProgressBar sortingProgressBar;
 
     public OutputView() {
         super(5);
@@ -26,6 +27,7 @@ public class OutputView extends VBox {
         this.filesListView = new ListView<>();
         this.singleResultButton = new Button("Single result");
         this.sumResultButton = new Button("Sum result");
+        this.sortingProgressBar = new ProgressBar();
         this.outputModel = new OutputModel(ComponentManager.getInstance().getOutput().getObservableFiles());
 
         singleResultButton.setDisable(true);
@@ -57,6 +59,18 @@ public class OutputView extends VBox {
         getChildren().add(filesListView);
         getChildren().add(singleResultButton);
         getChildren().add(sumResultButton);
+    }
+
+    public void updateProgressBar(double value) {
+        if (!this.getChildren().contains(sortingProgressBar)) {
+            this.getChildren().add(sortingProgressBar);
+        }
+        sortingProgressBar.setProgress(sortingProgressBar.getProgress() + value);
+    }
+
+    public void hideAndResetProgressBar() {
+        getChildren().remove(sortingProgressBar);
+        sortingProgressBar.setProgress(0);
     }
 
     public OutputModel getOutputModel() {
