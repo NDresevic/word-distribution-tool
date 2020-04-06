@@ -191,6 +191,11 @@ public class FileInputImplementation implements FileInput {
     }
 
     @Override
+    public List<CounterCruncher> getCrunchers() {
+        return this.crunchers;
+    }
+
+    @Override
     public void stop() {
         this.exit = true;
     }

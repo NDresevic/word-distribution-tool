@@ -17,11 +17,16 @@ public class OutputData {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public Future<Map<String, Integer>> getBagOfWordsOccurrenceMap() {
         return bagOfWordsOccurrenceMap;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OutputData) {
+            OutputData otherObj = (OutputData) obj;
+            return this.name.equals(otherObj.getName());
+        }
+        return false;
     }
 }

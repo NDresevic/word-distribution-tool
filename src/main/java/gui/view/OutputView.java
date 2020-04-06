@@ -1,12 +1,11 @@
 package gui.view;
 
+import components.ComponentManager;
 import gui.controller.output.SingleResultController;
 import gui.controller.output.SumResultController;
 import gui.model.OutputModel;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 public class OutputView extends VBox {
@@ -27,20 +26,33 @@ public class OutputView extends VBox {
         this.filesListView = new ListView<>();
         this.singleResultButton = new Button("Single result");
         this.sumResultButton = new Button("Sum result");
-        this.outputModel = new OutputModel();
+        this.outputModel = new OutputModel(ComponentManager.getInstance().getOutput().getObservableFiles());
+
+        singleResultButton.setDisable(true);
+        sumResultButton.setDisable(true);
 
         setPadding(new Insets(5));
     }
 
     private void addElements() {
         filesListView.setItems(outputModel.getFiles());
-        filesListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        filesListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        filesListView.setOnMouseClicked(mouseEvent -> {
+            int count = filesListView.getSelectionModel().getSelectedItems().size();
+            if (count == 1) {
+                singleResultButton.setDisable(false);
+                sumResultButton.setDisable(true);
+            } else if (count > 1) {
+                singleResultButton.setDisable(true);
+                sumResultButton.setDisable(false);
+            } else {
+                singleResultButton.setDisable(true);
+                sumResultButton.setDisable(true);
+            }
+        });
 
-        singleResultButton.disableProperty().bind(filesListView.getSelectionModel().selectedItemProperty().isNull());
-        sumResultButton.disableProperty().bind(filesListView.getSelectionModel().selectedItemProperty().isNull());
-
-        singleResultButton.setOnAction(new SingleResultController());
-        sumResultButton.setOnAction(new SumResultController());
+        singleResultButton.setOnAction(new SingleResultController(filesListView, this));
+        sumResultButton.setOnAction(new SumResultController(this));
 
         getChildren().add(filesListView);
         getChildren().add(singleResultButton);
@@ -49,5 +61,9 @@ public class OutputView extends VBox {
 
     public OutputModel getOutputModel() {
         return outputModel;
+    }
+
+    public ListView<String> getFilesListView() {
+        return filesListView;
     }
 }

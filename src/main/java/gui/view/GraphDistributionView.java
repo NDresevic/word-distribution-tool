@@ -1,41 +1,48 @@
 package gui.view;
 
 import javafx.geometry.Insets;
+import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.ScatterChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.layout.HBox;
+
+import java.util.List;
 
 public class GraphDistributionView extends HBox {
 
     private NumberAxis xAxis;
     private NumberAxis yAxis;
-    private ScatterChart<Number, Number> scatterChart;
+    private LineChart<Number, Number> lineChart;
 
     public GraphDistributionView() {
         super(5);
-        initElements();
-        addElements();
+        initAndAddElements();
     }
 
-    private void initElements() {
-        this.xAxis = new NumberAxis(0, 110, 5);
-        this.yAxis = new NumberAxis(0, 110, 5);
-        this.scatterChart = new ScatterChart<>(xAxis,yAxis);
-        xAxis.setLabel("X");
-        yAxis.setLabel("Y");
+    private void initAndAddElements() {
+        xAxis = new NumberAxis(0, 100, 10);
+        yAxis = new NumberAxis(0, 100, 10);
+        lineChart = new LineChart<>(xAxis, yAxis);
+        xAxis.setLabel("Words");
+        yAxis.setLabel("Frequency");
 
         setPadding(new Insets(5));
+        getChildren().add(this.lineChart);
     }
 
-    private void addElements() {
+    public void showGraph(String fileName, List<Integer> frequencies) {
         XYChart.Series series = new XYChart.Series();
-        series.setName("Equities");
-        series.getData().add(new XYChart.Data(4.2, 193.2));
-        series.getData().add(new XYChart.Data(2.8, 33.6));
-        series.getData().add(new XYChart.Data(6.2, 24.8));
+        series.setName(fileName);
 
-        this.scatterChart.getData().add(series);
-        getChildren().add(this.scatterChart);
+        yAxis = new NumberAxis(0, frequencies.get(0), frequencies.get(0) / 10);
+        yAxis.setLabel("Frequency");
+        lineChart = new LineChart<>(xAxis, yAxis);
+        for (int i = 0; i < frequencies.size(); i++) {
+            series.getData().add(new XYChart.Data(i, frequencies.get(i)));
+        }
+
+        this.lineChart.getData().add(series);
+        getChildren().clear();
+        getChildren().add(this.lineChart);
     }
 }

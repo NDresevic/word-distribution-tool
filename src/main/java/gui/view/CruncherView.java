@@ -47,11 +47,6 @@ public class CruncherView extends VBox {
         vBox.getChildren().add(removeButton);
         vBox.getChildren().add(crunchingLabel);
         removeButton.setOnAction(new RemoveCruncherController(this, cruncher, vBox));
-        if (cruncher.isCrunching()) {
-            vBox.getChildren().add(new Label("Crunching: "));
-
-            // TODO: ispisati listu fajlova koja se obradjuje
-        }
 
         this.getChildren().add(vBox);
     }

@@ -1,5 +1,9 @@
 package components.output;
 
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -14,11 +18,14 @@ public class CacheOutputImplementation implements CacheOutput{
 
     private Map<String, Integer> aggregatedResultsMap;
 
+    private ObservableList<String> observableFiles;
+
     public CacheOutputImplementation(ExecutorService threadPool) {
         this.threadPool = threadPool;
         this.outputQueue = new LinkedBlockingQueue<>();
         this.resultMap = new HashMap<>();
         this.aggregatedResultsMap = new ConcurrentHashMap<>();
+        this.observableFiles = FXCollections.observableArrayList();
 
         this.threadPool.execute(this);
     }
@@ -45,26 +52,40 @@ public class CacheOutputImplementation implements CacheOutput{
     @Override
     public void run() {
         try {
-            OutputData outputData = outputQueue.take();
-            outputData.setName(outputData.getName().substring(1));
-//            System.out.println("FINISHED: " + outputData.getName());
-            Map<String, Integer> bagOfWordsOccurrence = outputData.getBagOfWordsOccurrenceMap().get();
-            System.out.println("FINISHED: nOfKeys: " + bagOfWordsOccurrence.size() + " for file: " + outputData.getName());
-            this.resultMap.put(outputData.getName(), bagOfWordsOccurrence);
+            while (true) {
+                OutputData outputData = outputQueue.take();
+//                outputDa
+                Map<String, Integer> bagOfWordsOccurrence = outputData.getBagOfWordsOccurrenceMap().get();
+//                outputData.getBagOfWordsOccurrenceMap().is
+                System.out.println("FINISHED: nOfKeys: " + bagOfWordsOccurrence.size() + " for file: " + outputData.getName());
+
+                this.resultMap.put(outputData.getName(), bagOfWordsOccurrence);
+                Platform.runLater(() -> {
+                    this.observableFiles.remove("*" + outputData.getName());
+                    this.observableFiles.add(outputData.getName());
+                });
+            }
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public void addOutputDataToQueue(OutputData outputData) {
-        this.outputQueue.add(outputData);
+    public void take(String fileName) {
+
     }
 
     @Override
-    public Map<String, Integer> getAggregatedResults() {
-//        this.threadPool.execute(() -> this.aggregateResults());
-        this.aggregateResults();
-        return this.aggregatedResultsMap;
+    public void addOutputDataToQueue(OutputData outputData) {
+        this.outputQueue.add(outputData);
+        Platform.runLater(() -> this.observableFiles.add("*" + outputData.getName()));
+    }
+
+    @Override
+    public Map<String, Integer> getResultMapForFile(String name) {
+        return resultMap.get(name);
+    }
+
+    public ObservableList<String> getObservableFiles() {
+        return observableFiles;
     }
 }

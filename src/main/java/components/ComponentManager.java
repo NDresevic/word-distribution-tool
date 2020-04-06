@@ -68,7 +68,7 @@ public class ComponentManager {
 //            fileInput.startScan();
         }
 
-        System.out.println("AGGREGATED SIZE: " + cacheOutput.getAggregatedResults().size());
+//        System.out.println("AGGREGATED SIZE: " + cacheOutput.getAggregatedResults().size());
     }
 
     public String addCruncher(int arity, Label crunchingLabel) {
@@ -78,6 +78,14 @@ public class ComponentManager {
         this.crunchers.put(name, counterCruncher);
         CRUNCHER_COUNT++;
         return name;
+    }
+
+    public void removeCruncher(String name) {
+        CounterCruncher counterCruncher = this.crunchers.get(name);
+        for (Map.Entry<String, FileInput> entry: this.inputs.entrySet()) {
+            entry.getValue().getCrunchers().remove(counterCruncher);
+        }
+        this.crunchers.remove(name);
     }
 
     public String addInput(String disc, Label statusLabel) {
@@ -91,6 +99,7 @@ public class ComponentManager {
     public void removeInput(String name) {
         FileInput fileInput = this.inputs.get(name);
         fileInput.stop();
+        this.inputs.remove(name);
     }
 
     public void connectInputToCruncher(FileInput fileInput, CounterCruncher counterCruncher) {
@@ -101,8 +110,12 @@ public class ComponentManager {
         fileInput.removeCruncher(counterCruncher);
     }
 
-    public void connectCruncherToOutput(CounterCruncher counterCruncher, CacheOutput cacheOutput) {
+    private void connectCruncherToOutput(CounterCruncher counterCruncher, CacheOutput cacheOutput) {
         counterCruncher.addOutput(cacheOutput);
+    }
+
+    public Map<String, Integer> getResultForFile(String fileName) {
+        return output.getResultMapForFile(fileName);
     }
 
     public static ComponentManager getInstance() {
@@ -122,5 +135,9 @@ public class ComponentManager {
 
     public FileInput getFileInputForName(String name) {
         return this.inputs.get(name);
+    }
+
+    public CacheOutput getOutput() {
+        return output;
     }
 }

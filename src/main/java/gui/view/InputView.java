@@ -4,6 +4,7 @@ import configuration.Configuration;
 import gui.controller.input.*;
 import gui.model.CruncherModel;
 import gui.model.InputModel;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -79,9 +80,19 @@ public class InputView extends VBox {
         ComboBox<CruncherModel> crunchersComboBox  = new ComboBox<>(this.allCrunchers);
         crunchersComboBox.getSelectionModel().selectFirst();
         // if selected CruncherModel is already linked to InputModel then "Link Cruncher" button is disabled
-        crunchersComboBox.setOnAction(e ->
-                linkCruncherButton.setDisable(observableCrunchers.contains(crunchersComboBox.getValue())));
+        crunchersComboBox.setOnAction(e -> {
+            if (crunchersComboBox.getItems().isEmpty() ||
+                    observableCrunchers.contains(crunchersComboBox.getValue())) {
+                linkCruncherButton.setDisable(true);
+            } else {
+                linkCruncherButton.setDisable(false);
+            }
+        });
 
+        allCrunchers.addListener((ListChangeListener<CruncherModel>) change
+                -> crunchersComboBox.getSelectionModel().selectFirst());
+        // TODO: fix bug - kad dodas prvo crunchera link je disabled
+        linkCruncherButton.setDisable(true);
         unlinkCruncherButton.disableProperty().bind(crunchersListView.getSelectionModel().selectedItemProperty().isNull());
         removeDirButton.disableProperty().bind(directoriesListView.getSelectionModel().selectedItemProperty().isNull());
 
@@ -95,8 +106,6 @@ public class InputView extends VBox {
 
         HBox inputsBox = new HBox(5);
         inputsBox.getChildren().addAll(startPauseButton, removeInputButton);
-
-//        Label statusLabel = new Label("Idle");
 
         VBox vBox = new VBox(5);
         vBox.setPadding(new Insets(5));
@@ -117,8 +126,6 @@ public class InputView extends VBox {
         unlinkCruncherButton.setOnAction(new UnlinkCruncherController(inputModel, crunchersListView, crunchersComboBox));
         addDirButton.setOnAction(new AddDirectoryController(inputModel));
         removeDirButton.setOnAction(new RemoveDirectoryController(inputModel, directoriesListView));
-
-        // TODO: implement action + add bindings to Start/Pause button
         startPauseButton.setOnAction(new StartPauseInputController(startPauseButton, inputModel, statusLabel));
 
         this.getChildren().addAll(vBox);

@@ -3,6 +3,7 @@ package components.input;
 import components.cruncher.CounterCruncher;
 
 import java.io.File;
+import java.util.List;
 
 public interface FileInput extends Runnable {
 
@@ -14,6 +15,7 @@ public interface FileInput extends Runnable {
 
     void addCruncher(CounterCruncher cruncher);
     void removeCruncher(CounterCruncher cruncher);
+    List<CounterCruncher> getCrunchers();
 
     void stop();
 }
