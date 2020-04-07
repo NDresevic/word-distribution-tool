@@ -27,14 +27,6 @@ public class FileInputImplementation implements FileInput {
 
     private List<CounterCruncher> crunchers;
 
-    public FileInputImplementation(String disc, List<File> directories, ExecutorService threadPool) {
-        this.disc = disc;
-        this.directories = directories;
-        this.threadPool = threadPool;
-        this.lastModifiedMap = new ConcurrentHashMap<>();
-        this.crunchers = new CopyOnWriteArrayList<>();
-    }
-
     public FileInputImplementation(String disc, ExecutorService threadPool, Label statusLabel) {
         this.disc = disc;
         this.threadPool = threadPool;
@@ -62,8 +54,6 @@ public class FileInputImplementation implements FileInput {
      * Kada u nekom od njih pronađe bilo koju .txt datoteku, ona se dodaje na spisak za čitanje.
      */
     private synchronized void scanDirectories() {
-        // ovo je proizvodilo out of memory - > 3.9 skoro
-//        this.lastModifiedMap = new ConcurrentHashMap<>();
         for (File directory: this.directories) {
             this.insertFiles(directory);
         }
@@ -196,7 +186,14 @@ public class FileInputImplementation implements FileInput {
     }
 
     @Override
+    public void remove() {
+        this.exit = true;
+    }
+
+    @Override
     public void stop() {
         this.exit = true;
+        InputData poison = new InputData(true);
+        this.sendInputDataToCrunchers(poison);
     }
 }

@@ -24,6 +24,9 @@ public class AddDirectoryController implements EventHandler<ActionEvent> {
         directoryChooser.setTitle("Select directory to scan");
         File directory = directoryChooser.showDialog(MainStage.getInstance());
 
+        if (directory == null) {
+            return;
+        }
         inputModel.getDirectories().add(directory);
 
         FileInput fileInput = ComponentManager.getInstance().getInputs().get(inputModel.getName());

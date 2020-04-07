@@ -3,7 +3,6 @@ package gui.controller.input;
 import components.ComponentManager;
 import gui.model.InputModel;
 import gui.view.InputView;
-import gui.view.MainStage;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;

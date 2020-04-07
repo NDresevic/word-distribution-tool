@@ -1,11 +1,13 @@
 package gui.controller.output;
 
 import components.ComponentManager;
+import gui.model.FileModel;
 import gui.view.OutputView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
 import java.util.List;
@@ -31,8 +33,10 @@ public class SumResultController implements EventHandler<ActionEvent> {
                 return;
             }
 
-            List<String> sumFiles = this.outputView.getFilesListView().getSelectionModel().getSelectedItems();
-            ComponentManager.getInstance().getOutput().aggregateResults(response, sumFiles);
+            List<FileModel> sumFiles = this.outputView.getFilesListView().getSelectionModel().getSelectedItems();
+            ProgressBar progressBar = new ProgressBar();
+            this.outputView.getChildren().add(progressBar);
+            ComponentManager.getInstance().getOutput().aggregateResults(response, sumFiles, progressBar);
         });
 
     }

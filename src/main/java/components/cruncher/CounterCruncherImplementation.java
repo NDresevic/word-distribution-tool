@@ -45,6 +45,11 @@ public class CounterCruncherImplementation implements CounterCruncher {
         try {
             while (true) {
                 InputData inputData = inputQueue.take();
+                if (inputData.isPoisoned()) {
+                    OutputData poison = new OutputData(true);
+                    this.sendProcessedDataToOutput(poison);
+                    break;
+                }
                 Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText() + "\n" + inputData.getName()));
 
                 String text = inputData.getContent();
@@ -66,6 +71,7 @@ public class CounterCruncherImplementation implements CounterCruncher {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+        System.out.println("CounterCruncher is stopped..");
     }
 
     @Override

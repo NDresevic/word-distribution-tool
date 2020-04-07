@@ -7,15 +7,12 @@ import components.input.FileInputImplementation;
 import components.output.CacheOutput;
 import components.output.CacheOutputImplementation;
 import configuration.Configuration;
+import javafx.application.Platform;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.*;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.*;
 
 public class ComponentManager {
 
@@ -50,27 +47,6 @@ public class ComponentManager {
         this.output = new CacheOutputImplementation(this.outputThreadPool);
     }
 
-    public void initializeComponents(Map<String, List<File>> discFilesMap) {
-        CacheOutput cacheOutput = new CacheOutputImplementation(this.outputThreadPool);
-        for (Map.Entry<String, List<File>> entry : discFilesMap.entrySet()) {
-            List<File> directories = new CopyOnWriteArrayList<>(entry.getValue());
-            FileInput fileInput = new FileInputImplementation(entry.getKey(), directories, this.inputThreadPool);
-
-//            CounterCruncherImplementation counterCruncher = new CounterCruncherImplementation(1, this.cruncherThreadPool);
-//            this.connectInputToCruncher(fileInput, counterCruncher);
-//            this.connectCruncherToOutput(counterCruncher, cacheOutput);
-
-//            try {
-//                Thread.sleep(10000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//            fileInput.startScan();
-        }
-
-//        System.out.println("AGGREGATED SIZE: " + cacheOutput.getAggregatedResults().size());
-    }
-
     public String addCruncher(int arity, Label crunchingLabel) {
         CounterCruncher counterCruncher = new CounterCruncherImplementation(arity, this.cruncherThreadPool, crunchingLabel);
         this.connectCruncherToOutput(counterCruncher, this.output);
@@ -98,7 +74,7 @@ public class ComponentManager {
 
     public void removeInput(String name) {
         FileInput fileInput = this.inputs.get(name);
-        fileInput.stop();
+        fileInput.remove();
         this.inputs.remove(name);
     }
 
@@ -114,15 +90,33 @@ public class ComponentManager {
         counterCruncher.addOutput(cacheOutput);
     }
 
-//    public Map<String, Integer> getResultForFile(String fileName) {
-//        return output.getResultMapForFile(fileName);
-//    }
+    public void shutdownApp(Stage popupStage) {
+        for (FileInput fileInput: this.inputs.values()) {
+            fileInput.stop();
+        }
+        this.inputThreadPool.shutdown();
+        this.cruncherThreadPool.shutdown();
+        this.outputThreadPool.shutdown();
 
-// TODO: thread safe make
-    // TODO: dodaje nul kad kazes cancel za folder
+        while (true) {
+            int inputActive = ((ThreadPoolExecutor) this.inputThreadPool).getActiveCount();
+            int cruncherActive = this.cruncherThreadPool.getActiveThreadCount();
+            int outputActive = ((ThreadPoolExecutor) this.outputThreadPool).getActiveCount();
+            if (inputActive == 0 && cruncherActive == 0 && outputActive == 0) {
+                break;
+            }
+        }
+
+        Platform.runLater(() -> popupStage.close());
+    }
+
     public static ComponentManager getInstance() {
         if (instance == null) {
-            instance = new ComponentManager();
+            synchronized (ComponentManager.class) {
+                if (instance == null) {
+                    instance = new ComponentManager();
+                }
+            }
         }
         return instance;
     }

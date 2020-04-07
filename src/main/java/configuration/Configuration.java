@@ -21,7 +21,6 @@ public class Configuration {
 
             properties.load(input);
             properties.forEach((key, value) -> parameters.put(key.toString(), value.toString()));
-//            System.out.println(parameters);
 //            parameters.forEach((key, value) -> System.out.println("Key : " + key + ", Value : " + value));
         } catch (IOException ex) {
             ex.printStackTrace();

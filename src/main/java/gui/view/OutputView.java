@@ -3,6 +3,7 @@ package gui.view;
 import components.ComponentManager;
 import gui.controller.output.SingleResultController;
 import gui.controller.output.SumResultController;
+import gui.model.FileModel;
 import gui.model.OutputModel;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -12,7 +13,7 @@ public class OutputView extends VBox {
 
     private OutputModel outputModel;
 
-    private ListView<String> filesListView;
+    private ListView<FileModel> filesListView;
     private Button singleResultButton;
     private Button sumResultButton;
     private ProgressBar sortingProgressBar;
@@ -68,6 +69,10 @@ public class OutputView extends VBox {
         sortingProgressBar.setProgress(sortingProgressBar.getProgress() + value);
     }
 
+    public void removeProgressBar(ProgressBar progressBar) {
+        getChildren().remove(progressBar);
+    }
+
     public void hideAndResetProgressBar() {
         getChildren().remove(sortingProgressBar);
         sortingProgressBar.setProgress(0);
@@ -77,7 +82,7 @@ public class OutputView extends VBox {
         return outputModel;
     }
 
-    public ListView<String> getFilesListView() {
+    public ListView<FileModel> getFilesListView() {
         return filesListView;
     }
 }

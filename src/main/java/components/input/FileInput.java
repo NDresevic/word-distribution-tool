@@ -17,5 +17,6 @@ public interface FileInput extends Runnable {
     void removeCruncher(CounterCruncher cruncher);
     List<CounterCruncher> getCrunchers();
 
+    void remove();
     void stop();
 }

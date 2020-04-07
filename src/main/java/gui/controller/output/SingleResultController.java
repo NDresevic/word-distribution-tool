@@ -1,6 +1,7 @@
 package gui.controller.output;
 
 import components.ComponentManager;
+import gui.model.FileModel;
 import gui.view.MainStage;
 import gui.view.OutputView;
 import javafx.application.Platform;
@@ -15,11 +16,11 @@ import java.util.stream.Collectors;
 
 public class SingleResultController implements EventHandler<ActionEvent>{
 
-    private ListView<String> filesListView;
+    private ListView<FileModel> filesListView;
     private OutputView outputView;
     private int K;
 
-    public SingleResultController(ListView<String> filesListView, OutputView outputView) {
+    public SingleResultController(ListView<FileModel> filesListView, OutputView outputView) {
         this.filesListView = filesListView;
         this.outputView = outputView;
         this.K = ComponentManager.SORT_PROGRESS_LIMIT;
@@ -27,7 +28,7 @@ public class SingleResultController implements EventHandler<ActionEvent>{
 
     @Override
     public void handle(ActionEvent event) {
-        String fileName = this.filesListView.getSelectionModel().getSelectedItem();
+        String fileName = this.filesListView.getSelectionModel().getSelectedItem().getName();
         Map<String, Integer> resultMap = ComponentManager.getInstance().getOutput().poll(fileName);
 
         if (resultMap == null) {
