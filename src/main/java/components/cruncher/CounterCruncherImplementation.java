@@ -3,6 +3,7 @@ package components.cruncher;
 import components.input.InputData;
 import components.output.CacheOutput;
 import components.output.OutputData;
+import gui.view.MainStage;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 
@@ -68,6 +69,9 @@ public class CounterCruncherImplementation implements CounterCruncher {
 
 //                Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText().replace("\n" + inputData.getName(), "")));
             }
+
+        } catch (OutOfMemoryError e) {
+            Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

@@ -22,6 +22,15 @@ public class FileModel {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FileModel) {
+            FileModel otherObj = (FileModel) obj;
+            return this.name.equals(otherObj.getName());
+        }
+        return false;
+    }
+
+    @Override
     public String toString() {
         if (!complete) {
             return "*" + name;

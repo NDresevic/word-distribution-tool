@@ -1,17 +1,16 @@
 package gui.view;
 
 import components.ComponentManager;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class MainStage extends Stage {
 
@@ -24,6 +23,7 @@ public class MainStage extends Stage {
 
     private BorderPane borderPane;
     private Stage popupStage;
+    private Alert outOfMemoryAlert;
 
     private MainStage() {
         this.cruncherView = new CruncherView();
@@ -32,6 +32,7 @@ public class MainStage extends Stage {
         this.outputView = new OutputView();
         this.borderPane = new BorderPane();
         this.popupStage = new Stage();
+        this.outOfMemoryAlert = new Alert(Alert.AlertType.INFORMATION, "Out of memory, aborting.", ButtonType.OK);
 
         StackPane stackPane = new StackPane(new Label("Stopping everything..."));
         Scene popupScene = new Scene(stackPane, 300, 70);
@@ -55,6 +56,11 @@ public class MainStage extends Stage {
             new Thread(() -> ComponentManager.getInstance().shutdownApp(popupStage)).start();
             this.popupStage.showAndWait();
         });
+    }
+
+    public void handleOutOfMemoryError() {
+        this.outOfMemoryAlert.showAndWait();
+        System.exit(0);
     }
 
     public static MainStage getInstance() {

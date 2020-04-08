@@ -17,9 +17,14 @@ public class CacheOutputImplementation implements CacheOutput{
     private final ExecutorService threadPool;
 
     private BlockingQueue<OutputData> outputQueue;
-    // [naziv rezultata -> brojevi pojavljivanja svih vreća te arnosti u toj datoteci]
+    /**
+     * [name of the file -> occurrence number of all bags with given arity in the file]
+     */
     private ConcurrentMap<String, Future<Map<String, Integer>>> resultMap;
 
+    /**
+     * List of files that are currently processing or have been processed shown in GUI output list view.
+     */
     private ObservableList<FileModel> observableFiles;
 
     public CacheOutputImplementation(ExecutorService threadPool) {
@@ -34,54 +39,47 @@ public class CacheOutputImplementation implements CacheOutput{
     // TODO: zvezda, progress bar
     @Override
     public void aggregateResults(String fileName, List<FileModel> files, ProgressBar progressBar) {
-
         this.threadPool.execute(() -> {
-            System.out.println("agg uso");
-            int time = (int) System.currentTimeMillis();
-            final double updateValue = files.size() / 100;
-
-            Future<Map<String, Integer>> resultFuture = threadPool.submit(() -> {
-                Map<String, Integer> aggregatedResultMap = new HashMap<>();
-                for (FileModel fileModel: files) {
-                    progressBar.setProgress(progressBar.getProgress() + updateValue);
-                    for (Map.Entry<String, Integer> entry: this.take(fileModel.getName()).entrySet()) {
-                        String key = entry.getKey();
-                        if (!aggregatedResultMap.containsKey(key)) {
-                            aggregatedResultMap.put(key, entry.getValue());
-                        } else {
-                            int value = aggregatedResultMap.get(key);
-                            aggregatedResultMap.put(key, value + entry.getValue());
-                        }
-                    }
-
-                    Platform.runLater(() -> MainStage.getInstance().getOutputView().removeProgressBar(progressBar));
-                }
-
-                return aggregatedResultMap;
-            });
-
-            this.resultMap.put(fileName, resultFuture);
-            FileModel fileModel = new FileModel(fileName);
-            Platform.runLater(() -> this.observableFiles.add(fileModel));
-
             try {
-                Map<String, Integer> result = this.resultMap.get(fileName).get();
-                fileModel.setComplete(true);
-//            this.observableFiles.re
-//            Platform.runLater(() -> fileModel.setComplete(true));
+                final double updateValue = files.size() / 100;
+                Future<Map<String, Integer>> resultFuture = threadPool.submit(() ->
+                        this.getAggregatedMap(files, progressBar, updateValue));
+                this.resultMap.put(fileName, resultFuture);
 
-//            Platform.runLater(() -> this.observableFiles.get(fileModel).setComplete(true));
-//            this.observableFiles.get(fileModel).setComplete(true);
-//            Platform.runLater(() ->
-//                    this.observableFiles.set(this.observableFiles.indexOf("*" + fileName), fileName));
+                FileModel fileModel = new FileModel(fileName);
+                Platform.runLater(() -> this.observableFiles.add(fileModel));
+
+                Map<String, Integer> result = this.resultMap.get(fileName).get();
+                int index = this.observableFiles.indexOf(fileModel);
+                Platform.runLater(() -> this.observableFiles.get(index).setComplete(true));
+            } catch (OutOfMemoryError e) {
+                Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-
-            System.out.println(System.currentTimeMillis() - time);
-            System.out.println("agg izaso");
         });
+    }
 
+    private Map<String, Integer> getAggregatedMap(List<FileModel> files, ProgressBar progressBar, double updateValue) throws OutOfMemoryError {
+        Map<String, Integer> aggregatedResultMap = new HashMap<>();
+
+        for (FileModel fileModel: files) {
+            Platform.runLater(() -> progressBar.setProgress(progressBar.getProgress() + updateValue));
+
+            for (Map.Entry<String, Integer> entry: this.take(fileModel.getName()).entrySet()) {
+                String key = entry.getKey();
+                if (!aggregatedResultMap.containsKey(key)) {
+                    aggregatedResultMap.put(key, entry.getValue());
+                } else {
+                    int value = aggregatedResultMap.get(key);
+                    aggregatedResultMap.put(key, value + entry.getValue());
+                }
+            }
+
+            Platform.runLater(() -> MainStage.getInstance().getOutputView().removeProgressBar(progressBar));
+        }
+
+        return aggregatedResultMap;
     }
 
     @Override
@@ -100,11 +98,14 @@ public class CacheOutputImplementation implements CacheOutput{
         System.out.println("CacheOutput is stopped..");
     }
 
-    // TODO: bag kad promenis fajl pa opet dodas
     private void saveAndProcessData(OutputData outputData) {
         this.resultMap.put(outputData.getName(), outputData.getBagOfWordsOccurrenceMap());
         FileModel fileModel = new FileModel(outputData.getName());
-        Platform.runLater(() -> this.observableFiles.add(fileModel));
+        Platform.runLater(() -> {
+            if (!this.observableFiles.contains(fileModel)) {
+                this.observableFiles.add(fileModel);
+            }
+        });
 //        Platform.runLater(() -> this.observableFiles.add("*" + outputData.getName()));
 
         try {
@@ -114,6 +115,8 @@ public class CacheOutputImplementation implements CacheOutput{
             fileModel.setComplete(true);
 //            Platform.runLater(() ->
 //                    this.observableFiles.set(this.observableFiles.indexOf("*" + outputData.getName()), outputData.getName()));
+        } catch (OutOfMemoryError e) {
+            Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

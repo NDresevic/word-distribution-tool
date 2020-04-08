@@ -2,6 +2,7 @@ package components.input;
 
 import components.ComponentManager;
 import components.cruncher.CounterCruncher;
+import gui.view.MainStage;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 
@@ -54,7 +55,7 @@ public class FileInputImplementation implements FileInput {
      * Kada u nekom od njih pronađe bilo koju .txt datoteku, ona se dodaje na spisak za čitanje.
      */
     private synchronized void scanDirectories() {
-        for (File directory: this.directories) {
+        for (File directory : this.directories) {
             this.insertFiles(directory);
         }
         System.out.println(this.lastModifiedMap);
@@ -119,6 +120,8 @@ public class FileInputImplementation implements FileInput {
 //                String content = Files.asCharSource(file, Charsets.US_ASCII).read();
                 InputData inputData = new InputData(file.getName(), content);
                 this.sendInputDataToCrunchers(inputData);
+            } catch (OutOfMemoryError e) {
+                Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
             } catch (IOException e) {
                 e.printStackTrace();
             }
