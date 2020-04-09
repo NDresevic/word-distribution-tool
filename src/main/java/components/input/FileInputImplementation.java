@@ -64,13 +64,17 @@ public class FileInputImplementation implements FileInput {
     private void insertFiles(File directory) {
         List<File> files = Collections.synchronizedList(new ArrayList<>());
         files = this.getFilesFromDirectory(directory, files);
-        for (File file: files) {
-            Long lastModified = this.lastModifiedMap.get(file);
-            if (lastModified == null || !lastModified.equals(file.lastModified())) {
-                this.lastModifiedMap.put(file, file.lastModified());
-                this.threadPool.execute(() -> readFile(file));
-            }
-        }
+         try {
+             for (File file : files) {
+                 Long lastModified = this.lastModifiedMap.get(file);
+                 if (lastModified == null || !lastModified.equals(file.lastModified())) {
+                     this.lastModifiedMap.put(file, file.lastModified());
+                     this.threadPool.execute(() -> readFile(file));
+                 }
+             }
+         } catch (RejectedExecutionException e) {
+             return;
+         }
     }
 
     private List<File> getFilesFromDirectory(File directory, List<File> files) {
@@ -139,7 +143,11 @@ public class FileInputImplementation implements FileInput {
     public synchronized void startRunning() {
         if (!started) {
             started = true;
-            threadPool.execute(this);
+            try {
+                threadPool.execute(this);
+            } catch (RejectedExecutionException e) {
+                return;
+            }
         }
         running = true;
         notify();

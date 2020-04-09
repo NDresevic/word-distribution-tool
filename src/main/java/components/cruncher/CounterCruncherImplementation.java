@@ -7,7 +7,6 @@ import gui.view.MainStage;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 
-import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -62,17 +61,20 @@ public class CounterCruncherImplementation implements CounterCruncher {
                 System.out.println("BEGAN: " + outputData.getName());
                 this.sendProcessedDataToOutput(outputData);
 
-
-                Map<String, Integer> result = resultFuture.get();
-                // TODO: fix bug with showing currently crunching files
-                Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText().replace(inputData.getName(), "")));
-
-//                Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText().replace("\n" + inputData.getName(), "")));
+                this.threadPool.execute(() -> {
+                    try {
+                        Map<String, Integer> result = resultFuture.get();
+                        Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText().replace("\n" + inputData.getName(), "")));
+                    } catch (InterruptedException | ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
-
+        }  catch (RejectedExecutionException e) {
+            return;
         } catch (OutOfMemoryError e) {
             Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
         System.out.println("CounterCruncher is stopped..");

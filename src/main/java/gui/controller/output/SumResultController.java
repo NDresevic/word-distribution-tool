@@ -10,6 +10,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextInputDialog;
 import javafx.stage.Modality;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class SumResultController implements EventHandler<ActionEvent> {
@@ -33,8 +35,8 @@ public class SumResultController implements EventHandler<ActionEvent> {
                 return;
             }
 
-            List<FileModel> sumFiles = this.outputView.getFilesListView().getSelectionModel().getSelectedItems();
-            ProgressBar progressBar = new ProgressBar();
+            List<FileModel> sumFiles = new ArrayList<>(this.outputView.getFilesListView().getSelectionModel().getSelectedItems());
+            ProgressBar progressBar = new ProgressBar(0);
             this.outputView.getChildren().add(progressBar);
             ComponentManager.getInstance().getOutput().aggregateResults(response, sumFiles, progressBar);
         });

@@ -8,11 +8,11 @@ import java.io.File;
 public class InputModel {
 
     private String name;
-    private String disc;
+    private DiscModel disc;
     private ObservableList<CruncherModel> crunchers;
     private ObservableList<File> directories;
 
-    public InputModel(String name, String disc) {
+    public InputModel(String name, DiscModel disc) {
         this.name = name;
         this.disc = disc;
         this.crunchers = FXCollections.observableArrayList();
@@ -23,7 +23,7 @@ public class InputModel {
         return name;
     }
 
-    public String getDisc() {
+    public DiscModel getDisc() {
         return disc;
     }
 

@@ -3,6 +3,7 @@ package gui.view;
 import configuration.Configuration;
 import gui.controller.input.*;
 import gui.model.CruncherModel;
+import gui.model.DiscModel;
 import gui.model.InputModel;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -20,7 +21,7 @@ public class InputView extends VBox {
     private List<InputModel> inputs;
     private ObservableList<CruncherModel> allCrunchers;
 
-    private ComboBox<String> discComboBox;
+    private ComboBox<DiscModel> discComboBox;
     private Button addFileInput;
 
     public InputView(ObservableList<CruncherModel> allCrunchers) {
@@ -33,7 +34,11 @@ public class InputView extends VBox {
     private void initElements() {
         this.inputs = new ArrayList<>();
         this.discComboBox = new ComboBox<>();
-        this.discComboBox.getItems().addAll(Configuration.getParameter("disks").split(";"));
+        String[] allDiscs = Configuration.getParameter("disks").split(";");
+        for (String disc: allDiscs) {
+            this.discComboBox.getItems().add(new DiscModel(disc));
+        }
+        this.discComboBox.setMaxSize(200, 200);
         this.discComboBox.getSelectionModel().selectFirst();
         this.addFileInput = new Button("Add File Input");
 
@@ -91,8 +96,9 @@ public class InputView extends VBox {
 
         allCrunchers.addListener((ListChangeListener<CruncherModel>) change
                 -> crunchersComboBox.getSelectionModel().selectFirst());
-        // TODO: fix bug - kad dodas prvo crunchera link je disabled
-        linkCruncherButton.setDisable(true);
+        if (this.allCrunchers.isEmpty()) {
+            linkCruncherButton.setDisable(true);
+        }
         unlinkCruncherButton.disableProperty().bind(crunchersListView.getSelectionModel().selectedItemProperty().isNull());
         removeDirButton.disableProperty().bind(directoriesListView.getSelectionModel().selectedItemProperty().isNull());
 
@@ -131,7 +137,7 @@ public class InputView extends VBox {
         this.getChildren().addAll(vBox);
     }
 
-    public ComboBox<String> getDiscComboBox() {
+    public ComboBox<DiscModel> getDiscComboBox() {
         return discComboBox;
     }
 

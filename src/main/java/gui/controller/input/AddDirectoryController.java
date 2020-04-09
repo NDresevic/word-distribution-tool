@@ -22,6 +22,7 @@ public class AddDirectoryController implements EventHandler<ActionEvent> {
     public void handle(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Select directory to scan");
+        directoryChooser.setInitialDirectory(new File(inputModel.getDisc().getPath()));
         File directory = directoryChooser.showDialog(MainStage.getInstance());
 
         if (directory == null) {

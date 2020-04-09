@@ -1,6 +1,7 @@
 package gui.controller.input;
 
 import components.ComponentManager;
+import gui.model.DiscModel;
 import gui.model.InputModel;
 import gui.view.InputView;
 import javafx.event.ActionEvent;
@@ -12,10 +13,10 @@ import javafx.scene.control.Label;
 public class AddInputController implements EventHandler<ActionEvent> {
 
     private InputView inputView;
-    private ComboBox<String> discComboBox;
+    private ComboBox<DiscModel> discComboBox;
     private Label statusLabel;
 
-    public AddInputController(InputView inputView, ComboBox<String> discComboBox) {
+    public AddInputController(InputView inputView, ComboBox<DiscModel> discComboBox) {
         this.inputView = inputView;
         this.discComboBox = discComboBox;
         this.statusLabel = new Label("Idle");
@@ -23,9 +24,9 @@ public class AddInputController implements EventHandler<ActionEvent> {
 
     @Override
     public void handle(ActionEvent event) {
-        String disc = discComboBox.getSelectionModel().getSelectedItem();
+        DiscModel disc = discComboBox.getSelectionModel().getSelectedItem();
         // add to back and return File Input name
-        String name = ComponentManager.getInstance().addInput(disc, this.statusLabel);
+        String name = ComponentManager.getInstance().addInput(disc.getPath(), this.statusLabel);
 
         InputModel inputModel = new InputModel(name, disc);
         inputView.getInputs().add(inputModel);
