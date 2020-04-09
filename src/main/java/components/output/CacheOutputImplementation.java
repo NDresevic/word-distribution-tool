@@ -3,8 +3,6 @@ package components.output;
 import gui.model.FileModel;
 import gui.view.MainStage;
 import javafx.application.Platform;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ProgressBar;
@@ -98,6 +96,9 @@ public class CacheOutputImplementation implements CacheOutput{
 
     private void saveAndShowData(String name, Future<Map<String, Integer>> bagOfWordsOccurrenceMap) {
         try {
+            if (this.resultMap.get(name) != null) {
+                bagOfWordsOccurrenceMap.get();
+            }
             this.resultMap.put(name, bagOfWordsOccurrenceMap);
             FileModel fileModel = new FileModel(name);
             Platform.runLater(() -> {
@@ -106,8 +107,14 @@ public class CacheOutputImplementation implements CacheOutput{
                 }
             });
 
-            Map<String, Integer> bagOfWordsOccurrence = bagOfWordsOccurrenceMap.get();
-            System.out.println("FINISHED: nOfKeys: " + bagOfWordsOccurrence.size() + " for file: " + name);
+            try{
+                Map<String, Integer> bagOfWordsOccurrence = bagOfWordsOccurrenceMap.get();
+                System.out.println("FINISHED: nOfKeys: " + bagOfWordsOccurrence.size() + " for file: " + name);
+                System.gc();
+
+            } catch (OutOfMemoryError e) {
+                Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
+            }
             fileModel.setComplete(true);
             Platform.runLater(() -> this.observableFiles.set(this.observableFiles.indexOf(fileModel), fileModel));
         } catch (OutOfMemoryError e) {

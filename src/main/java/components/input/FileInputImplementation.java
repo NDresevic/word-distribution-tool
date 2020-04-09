@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -32,7 +33,7 @@ public class FileInputImplementation implements FileInput {
         this.disc = disc;
         this.threadPool = threadPool;
         this.statusLabel = statusLabel;
-        this.directories = new ArrayList<>();
+        this.directories = new CopyOnWriteArrayList<>();
         this.lastModifiedMap = new ConcurrentHashMap<>();
         this.crunchers = new CopyOnWriteArrayList<>();
     }
@@ -55,8 +56,9 @@ public class FileInputImplementation implements FileInput {
      * Kada u nekom od njih pronađe bilo koju .txt datoteku, ona se dodaje na spisak za čitanje.
      */
     private synchronized void scanDirectories() {
-        for (File directory : this.directories) {
-            this.insertFiles(directory);
+        Iterator iterator = this.directories.iterator();
+        while (iterator.hasNext()) {
+            this.insertFiles((File) iterator.next());
         }
         System.out.println(this.lastModifiedMap);
     }
@@ -85,9 +87,6 @@ public class FileInputImplementation implements FileInput {
                 if (fileEntry.getName().toLowerCase().endsWith(".txt")) {
                     files.add(fileEntry);
                 }
-//                if (Files.getFileExtension(fileEntry.getName()).equals("txt")) {
-//                    files.add(fileEntry);
-//                }
             }
         }
         return files;
@@ -114,15 +113,13 @@ public class FileInputImplementation implements FileInput {
             try {
                 Platform.runLater(() -> statusLabel.setText("Reading: " + file.getName()));
 
-                // novo citanje - manje memorije zauzima (3.91GB -> 3.76GB)
-                FileInputStream fis = new FileInputStream(file);
+                FileInputStream fileInputStream = new FileInputStream(file);
                 byte[] data = new byte[(int) file.length()];
-                fis.read(data);
-                fis.close();
+                fileInputStream.read(data);
+                fileInputStream.close();
                 String content = new String(data, StandardCharsets.US_ASCII);
-                //
-//                String content = Files.asCharSource(file, Charsets.US_ASCII).read();
                 InputData inputData = new InputData(file.getName(), content);
+
                 this.sendInputDataToCrunchers(inputData);
             } catch (OutOfMemoryError e) {
                 Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
@@ -134,8 +131,9 @@ public class FileInputImplementation implements FileInput {
     }
 
     private void sendInputDataToCrunchers(InputData inputData) {
-        for (CounterCruncher cruncher : this.crunchers) {
-            cruncher.addInputDataToQueue(inputData);
+        Iterator iterator = this.crunchers.iterator();
+        while (iterator.hasNext()) {
+            ((CounterCruncher) iterator.next()).addInputDataToQueue(inputData);
         }
     }
 

@@ -1,3 +1,4 @@
+import components.ComponentManager;
 import configuration.Configuration;
 import gui.main.MainGui;
 import javafx.application.Application;
@@ -8,6 +9,7 @@ public class AppCore {
 
     public static void main(String[] args) {
         Configuration.loadConfiguration("config/app.properties");
+//        ComponentManager.getInstance();
 
         new Thread(() -> Application.launch(MainGui.class)).start();
 

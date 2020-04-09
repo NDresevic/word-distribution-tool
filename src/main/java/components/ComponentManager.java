@@ -107,7 +107,7 @@ public class ComponentManager {
             }
         }
 
-        Platform.runLater(() -> popupStage.close());
+        Platform.runLater(popupStage::close);
     }
 
     public static ComponentManager getInstance() {
