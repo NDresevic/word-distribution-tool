@@ -66,6 +66,8 @@ public class CounterCruncherImplementation implements CounterCruncher {
                     try {
                         Map<String, Integer> result = resultFuture.get();
                         Platform.runLater(() -> crunchingLabel.setText(crunchingLabel.getText().replace("\n" + inputData.getName(), "")));
+                    } catch (OutOfMemoryError e) {
+                        Platform.runLater(() -> MainStage.getInstance().handleOutOfMemoryError());
                     } catch (InterruptedException | ExecutionException e) {
                         e.printStackTrace();
                     }
