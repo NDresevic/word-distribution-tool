@@ -10,23 +10,24 @@ public class Configuration {
 
     private static Map<String, String> parameters = new HashMap<>();
 
-    public static Map loadConfiguration(String filename) {
+    /**
+     * Reads and stores configuration parameters form the given file (in this case 'app.properties').
+     */
+    public static void readConfiguration(String fileName) {
         try {
-            InputStream input = Configuration.class.getClassLoader().getResourceAsStream(filename);
+            InputStream input = Configuration.class.getClassLoader().getResourceAsStream(fileName);
             Properties properties = new Properties();
             if (input == null) {
-                System.out.println("Error, unable to find \"" + filename + "\"");
-                return null;
+                System.out.println("Error, unable to find \"" + fileName + "\"");
+                return;
             }
 
             properties.load(input);
             properties.forEach((key, value) -> parameters.put(key.toString(), value.toString()));
-//            parameters.forEach((key, value) -> System.out.println("Key : " + key + ", Value : " + value));
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        return parameters;
     }
 
     public static String getParameter(String parameter) {

@@ -62,20 +62,13 @@ public class OutputView extends VBox {
         getChildren().add(sumResultButton);
     }
 
-    public void updateProgressBar(double value) {
-        if (!this.getChildren().contains(sortingProgressBar)) {
-            this.getChildren().add(sortingProgressBar);
-        }
-        sortingProgressBar.setProgress(sortingProgressBar.getProgress() + value);
-    }
-
     public void removeProgressBar(ProgressBar progressBar) {
         getChildren().remove(progressBar);
     }
 
     public void hideAndResetProgressBar() {
         getChildren().remove(sortingProgressBar);
-        sortingProgressBar.setProgress(0);
+        sortingProgressBar = new ProgressBar();
     }
 
     public OutputModel getOutputModel() {
@@ -84,5 +77,9 @@ public class OutputView extends VBox {
 
     public ListView<FileModel> getFilesListView() {
         return filesListView;
+    }
+
+    public ProgressBar getSortingProgressBar() {
+        return sortingProgressBar;
     }
 }

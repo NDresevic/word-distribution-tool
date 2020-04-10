@@ -1,13 +1,21 @@
 package components.output;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Future;
 
 public class OutputData {
 
+    /**
+     * Name of the file.
+     */
     private String name;
+    /**
+     * [bag of words -> number of occurrence in the given file]
+     */
     private Future<Map<String, Integer>> bagOfWordsOccurrenceMap;
+    /**
+     * Boolean that indicates if this object is used as a poison pill.
+     */
     private boolean poisoned;
 
     public OutputData(String name, Future<Map<String, Integer>> bagOfWordsOccurrenceMap) {
@@ -19,7 +27,7 @@ public class OutputData {
     public OutputData(boolean poisoned) {
         this.name = "";
         this.bagOfWordsOccurrenceMap = null;// new HashMap<String, Integer>();
-        this.poisoned = true;
+        this.poisoned = poisoned;
     }
 
     public String getName() {

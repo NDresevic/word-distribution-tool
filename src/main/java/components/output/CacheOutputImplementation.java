@@ -67,7 +67,6 @@ public class CacheOutputImplementation implements CacheOutput{
                             Map.Entry::getValue,
                             Integer::sum));
 
-
             Platform.runLater(() -> progressBar.setProgress(progressBar.getProgress() + updateValue));
         }
         Platform.runLater(() -> MainStage.getInstance().getOutputView().removeProgressBar(progressBar));
@@ -94,6 +93,9 @@ public class CacheOutputImplementation implements CacheOutput{
         System.out.println("CacheOutput is stopped..");
     }
 
+    /**
+     * Saves initial data to the resultMap and updates GUI.
+     */
     private void saveAndShowData(String name, Future<Map<String, Integer>> bagOfWordsOccurrenceMap) {
         try {
             if (this.resultMap.get(name) != null) {

@@ -2,7 +2,13 @@ package gui.model;
 
 public class CruncherModel {
 
+    /**
+     * Name of the cruncher, used as an ID.
+     */
     private String name;
+    /**
+     * Arity that was given from the GUI by the user.
+     */
     private int arity;
 
     public CruncherModel(String name, int arity) {

@@ -61,6 +61,7 @@ public class CounterCruncherImplementation implements CounterCruncher {
                 System.out.println("BEGAN: " + outputData.getName());
                 this.sendProcessedDataToOutput(outputData);
 
+                // updates GUI when crunching is finished
                 this.threadPool.execute(() -> {
                     try {
                         Map<String, Integer> result = resultFuture.get();

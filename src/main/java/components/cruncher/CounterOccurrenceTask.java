@@ -31,6 +31,7 @@ public class CounterOccurrenceTask extends RecursiveTask<Map<String, Integer>> {
             return computeOccurrence(startIndex, endIndex);
         }
 
+        // find right boundary
         int right = startIndex + L;
         if (right >= endIndex) {
             right = endIndex;
@@ -75,6 +76,10 @@ public class CounterOccurrenceTask extends RecursiveTask<Map<String, Integer>> {
         return rightResult;
     }
 
+    /**
+     * Computes number of occurrence of each bag of words from text starting at 'startIndex' and ending at 'endIndex'.
+     * @return [bag of words -> number of occurrence]
+     */
     private Map<String, Integer> computeOccurrence(int startIndex, int endIndex) {
         Map<String, Integer> result = new ConcurrentHashMap<>();
 
@@ -103,6 +108,9 @@ public class CounterOccurrenceTask extends RecursiveTask<Map<String, Integer>> {
         return result;
     }
 
+    /**
+     * Returns list of words from text starting at 'startIndex' and ending at 'endIndex'.
+     */
     private List<String> textToWords(int startIndex, int endIndex) {
         List<String> words = new ArrayList<>();
         int begin = startIndex;
@@ -118,6 +126,9 @@ public class CounterOccurrenceTask extends RecursiveTask<Map<String, Integer>> {
         return words;
     }
 
+    /**
+     * Returns String from given list of words that represents sorted bag of words separated by space.
+     */
     private String listToString(List<String> words) {
         if (arity == 1) {
             return words.get(0);

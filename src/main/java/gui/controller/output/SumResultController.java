@@ -29,7 +29,7 @@ public class SumResultController implements EventHandler<ActionEvent> {
         textInputDialog.initModality(Modality.APPLICATION_MODAL);
         textInputDialog.showAndWait().ifPresent(response -> {
             // if name is not unique error is reported
-            if (this.outputView.getOutputModel().getFiles().contains(response)) {
+            if (this.outputView.getOutputModel().getFiles().contains(new FileModel(response))) {
                 Alert newAlert = new Alert(Alert.AlertType.ERROR, "Sum name is not unique.", ButtonType.OK);
                 newAlert.showAndWait();
                 return;

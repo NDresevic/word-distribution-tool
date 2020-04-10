@@ -2,7 +2,13 @@ package gui.model;
 
 public class FileModel {
 
+    /**
+     * Name of the file.
+     */
     private String name;
+    /**
+     * Boolean that indicates if the file was processed.
+     */
     private boolean complete;
 
     public FileModel(String name) {
@@ -11,10 +17,6 @@ public class FileModel {
 
     public String getName() {
         return name;
-    }
-
-    public boolean isComplete() {
-        return complete;
     }
 
     public void setComplete(boolean complete) {

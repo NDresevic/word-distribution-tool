@@ -14,23 +14,22 @@ public class AddInputController implements EventHandler<ActionEvent> {
 
     private InputView inputView;
     private ComboBox<DiscModel> discComboBox;
-    private Label statusLabel;
 
     public AddInputController(InputView inputView, ComboBox<DiscModel> discComboBox) {
         this.inputView = inputView;
         this.discComboBox = discComboBox;
-        this.statusLabel = new Label("Idle");
     }
 
     @Override
     public void handle(ActionEvent event) {
+        Label statusLabel = new Label("Idle");
         DiscModel disc = discComboBox.getSelectionModel().getSelectedItem();
-        // add to back and return File Input name
-        String name = ComponentManager.getInstance().addInput(disc.getPath(), this.statusLabel);
+        // add to backend and return File Input name
+        String name = ComponentManager.getInstance().addInput(disc.getPath(), statusLabel);
 
         InputModel inputModel = new InputModel(name, disc);
         inputView.getInputs().add(inputModel);
-        inputView.addFileInput(inputModel, this.statusLabel);
+        inputView.addFileInput(inputModel, statusLabel);
         Event.fireEvent(inputView.getDiscComboBox(), new ActionEvent());
     }
 }

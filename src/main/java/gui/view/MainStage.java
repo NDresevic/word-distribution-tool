@@ -59,8 +59,9 @@ public class MainStage extends Stage {
     }
 
     public void handleOutOfMemoryError() {
+        new Thread(() -> ComponentManager.getInstance().shutDownNowApp()).start();
         this.outOfMemoryAlert.showAndWait();
-        System.exit(0);
+        System.exit(1);
     }
 
     public static MainStage getInstance() {

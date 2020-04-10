@@ -110,6 +110,12 @@ public class ComponentManager {
         Platform.runLater(popupStage::close);
     }
 
+    public void shutDownNowApp() {
+        this.inputThreadPool.shutdownNow();
+        this.cruncherThreadPool.shutdownNow();
+        this.outputThreadPool.shutdownNow();
+    }
+
     public static ComponentManager getInstance() {
         if (instance == null) {
             synchronized (ComponentManager.class) {
@@ -135,5 +141,9 @@ public class ComponentManager {
 
     public CacheOutput getOutput() {
         return output;
+    }
+
+    public ExecutorService getOutputThreadPool() {
+        return outputThreadPool;
     }
 }

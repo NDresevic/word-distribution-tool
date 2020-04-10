@@ -25,6 +25,9 @@ public class FileInputImplementation implements FileInput {
     private List<File> directories;
     private final ExecutorService threadPool;
 
+    /**
+     * [file -> lastModified attribute of the file]
+     */
     private ConcurrentMap<File, Long> lastModifiedMap;
 
     private List<CounterCruncher> crunchers;
@@ -52,8 +55,7 @@ public class FileInputImplementation implements FileInput {
     }
 
     /**
-     * Komponenta treba da radi tako što rekurzivno obilazi direktorijume koji su joj navedeni kao input.
-     * Kada u nekom od njih pronađe bilo koju .txt datoteku, ona se dodaje na spisak za čitanje.
+     * Recursively scans directories in order to find ".txt" files.
      */
     private synchronized void scanDirectories() {
         Iterator iterator = this.directories.iterator();
@@ -63,6 +65,9 @@ public class FileInputImplementation implements FileInput {
         System.out.println(this.lastModifiedMap);
     }
 
+    /**
+     * Insert files to the lastModifiedMap and sends reading of files for execution.
+     */
     private void insertFiles(File directory) {
         List<File> files = Collections.synchronizedList(new ArrayList<>());
         files = this.getFilesFromDirectory(directory, files);
@@ -79,6 +84,9 @@ public class FileInputImplementation implements FileInput {
          }
     }
 
+    /**
+     * Returns all ".txt" files in the given directory and its subdirectories.
+     */
     private List<File> getFilesFromDirectory(File directory, List<File> files) {
         for (File fileEntry: directory.listFiles()) {
             if (fileEntry.isDirectory()) {
@@ -116,9 +124,9 @@ public class FileInputImplementation implements FileInput {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 byte[] data = new byte[(int) file.length()];
                 fileInputStream.read(data);
-                fileInputStream.close();
                 String content = new String(data, StandardCharsets.US_ASCII);
                 InputData inputData = new InputData(file.getName(), content);
+                fileInputStream.close();
 
                 this.sendInputDataToCrunchers(inputData);
             } catch (OutOfMemoryError e) {
@@ -163,12 +171,6 @@ public class FileInputImplementation implements FileInput {
         this.directories.add(directory);
     }
 
-    /**
-     * Ako se neki direktorijum izbaci iz spiska za skeniranje, sve datoteke unutar tog direktorijuma se brišu iz
-     * “last modified” spiska. Ako se isti direktorijum ponovo doda, sve datoteke unutar tog direktorijuma će biti
-     * ponovo pročitane.
-     * @param directory
-     */
     @Override
     public void removeDirectory(File directory) {
         List<File> files = Collections.synchronizedList(new ArrayList<>());
