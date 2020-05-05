@@ -12,6 +12,9 @@ The system functions as a *pipeline*, which has three types of nodes - **input**
 Input components always precede cruncher components, and cruncher components always precede output components.
 These components can exist in arbitrarily many instances, and each instance runs on a separate thread. Their main task is to provide data flow through the system. Each component type has a thread pool attached to it, which provides the task for that component type. In addition, the components communicate with each other via shared blocking queues. Each cruncher and output component has its own blocking order in which its predecessors can insert processing elements.
 
+<a href="url"><img src="pipeline_example.png" height="300"></a><br />
+**Picture 1:** *An example of a connected pipeline system*
+
 ### Input Component
 
 The main task of the input components is to provide the data that the cruncher components process. Each input component is bound to the *input* blocking queue of one or more cruncher components. The input component produces objects for that queue, ie. there is a *producer* over that queue, while the cruncher components will be a *consumer* each over its own queue.
@@ -45,6 +48,7 @@ This component also provides *aggregation* of already calculated results, specif
 ## GUI
 
 <a href="url"><img src="wdt_system_image.png" height="600"></a>
+**Picture 2:** *Word distribution system application*
 
 ### Input
 
